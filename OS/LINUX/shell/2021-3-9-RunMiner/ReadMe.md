@@ -2,7 +2,7 @@
 
 主程序`run.sh`
 
-![](../../../../assets/img/os/linux/RunMiner/1.png)
+![](./img/1.png)
 
 程序刚开始，它不管三七二十一直接删除阿里云的安全防护。
 
@@ -12,7 +12,7 @@
 
 接着再来看看`run.sh`所下载的`task.sh`文件。
 
-![](../../../../assets/img/os/linux/RunMiner/2.png)
+![](./img/2.png)
 
 这个文件可以看出来是运行挖矿程序的主要脚本。
 
