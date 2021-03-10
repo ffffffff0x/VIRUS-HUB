@@ -30,23 +30,30 @@
 
 接着我们用LordPE来查看这个病毒样本的导入表,分析API,查看其中一些关键的敏感函数。
 ![](./image/导入表.png)
+
 如下:
 - 自动弹出多个浏览器窗口 `ShellExecute`
+
 ![](./image/弹出多个窗口.png)
 
 - 发出系统提示音 `PlaySoundA`
+
 ![](./image/提示音.png)
 
 - 桌面颜色变化异常 `BitBlt`、`StretchBit`
+
 ![](./image/屏幕颜色变化.png)
 
 - 鼠标异常晃动 `SetCursorPos`、`GetCursorPos`
+
 ![](./image/鼠标异常.png)
 
 - 鼠标移动时桌面出现奇怪图标 `DrawIcon`
+
 ![](./image/图标.png)
 
 - 出现6个MEMZ进程 `ShellExecute`
+
 ![](./image/6个进程.png)
 
 还能发现一些虽然不能直接关联，但常常成对出现并且能完成某些功能。
@@ -69,7 +76,9 @@
 ![](./image/警告1.png)
 ![](./image/警告2.png)
 当这两次弹窗确认后,将获取进程的路径并存入`v10`中,接下来的`do while`执行5次循环,并且每次循环都调用一次`ShellExecuteW`,从而生成5个相同的进程,参数为`watchdog`:
+
 ![](./image/循环.png)
+
 5次循环结束后,用`ShellExecute`函数生成一个参数为`main`的进程,接下来的`SetPriorityClass`是给进程设置优先级的函数,多半是用来提权的,并且该函数的参数为`0x80u`,这也就意味着该`/main`进程的优先级应该是最高的。
 经过这一系列分析,我们终于知道在运行过程中的6个`MEMZ.exe`是怎么来的了,由最开始的双击从而生成一个原始进程,之后原始进程生成了5个`/watchdog`进程和一个`/main`进程,之后原始进程就第一时间将自己干掉,因此这就是为什么我们打开任务管理器时,存在6个`MEMZ.exe`进程的原因了。
 
@@ -86,6 +95,7 @@
 
 在该函数中,首先调用 `GetCurrentProcess` 和 `GetProcessImageFileName` 函数来获取此执行文件的路径,之后进入死循环中。在此循环中,`CreateToolhelp32Snapshot`用于拍摄进程快照,`Process32First`、`Process32Next`用于遍历进程,`GetProcessImageFileName`用于获取进程路径:
 ![](./image/进程数检测.png)
+
 在这上图中我们可以看出这几个点:
 
 - while循环是永真循环(死循环);
